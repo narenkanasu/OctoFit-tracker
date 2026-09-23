@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { displayName, formatDate, getCollection } from '../api.js'
+import { displayName, formatDate, getActivities } from '../api.js'
 
 function Activities() {
   const [activities, setActivities] = useState([])
   const [state, setState] = useState({ loading: true, error: '' })
 
   useEffect(() => {
-    getCollection('activities')
+    getActivities()
       .then((items) => setActivities(items))
       .catch((error) => setState({ loading: false, error: error.message }))
       .finally(() => setState((current) => ({ ...current, loading: false })))

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { displayName, getCollection } from '../api.js'
+import { displayName, getLeaderboard } from '../api.js'
 
 function Leaderboard() {
   const [entries, setEntries] = useState([])
   const [state, setState] = useState({ loading: true, error: '' })
 
   useEffect(() => {
-    getCollection('leaderboard')
+    getLeaderboard()
       .then((items) => setEntries(items))
       .catch((error) => setState({ loading: false, error: error.message }))
       .finally(() => setState((current) => ({ ...current, loading: false })))

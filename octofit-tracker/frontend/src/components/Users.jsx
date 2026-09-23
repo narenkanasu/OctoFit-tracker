@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { displayName, getCollection } from '../api.js'
+import { displayName, getUsers } from '../api.js'
 
 function Users() {
   const [users, setUsers] = useState([])
   const [state, setState] = useState({ loading: true, error: '' })
 
   useEffect(() => {
-    getCollection('users')
+    getUsers()
       .then((items) => setUsers(items))
       .catch((error) => setState({ loading: false, error: error.message }))
       .finally(() => setState((current) => ({ ...current, loading: false })))

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { getCollection } from '../api.js'
+import { getWorkouts } from '../api.js'
 
 function Workouts() {
   const [workouts, setWorkouts] = useState([])
   const [state, setState] = useState({ loading: true, error: '' })
 
   useEffect(() => {
-    getCollection('workouts')
+    getWorkouts()
       .then((items) => setWorkouts(items))
       .catch((error) => setState({ loading: false, error: error.message }))
       .finally(() => setState((current) => ({ ...current, loading: false })))
