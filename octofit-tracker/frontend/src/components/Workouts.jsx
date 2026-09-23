@@ -1,21 +1,43 @@
 import { useEffect, useState } from 'react'
-import { getWorkouts } from '../api.js'
+
+const workoutsEndpoint = import.meta.env.VITE_CODESPACE_NAME
+  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev/api/workouts`
+  : 'http://localhost:8000/api/workouts'
 
 function Workouts() {
   const [workouts, setWorkouts] = useState([])
   const [state, setState] = useState({ loading: true, error: '' })
 
   useEffect(() => {
-    getWorkouts()
-      .then((items) => setWorkouts(items))
+    fetch(workoutsEndpoint)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Unable to load workouts.')
+        }
+        return response.json()
+      })
+      .then((payload) => {
+        const items = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload?.results)
+            ? payload.results
+            : Array.isArray(payload?.data)
+              ? payload.data
+              : Array.isArray(payload?.items)
+                ? payload.items
+                : Array.isArray(payload?.data?.results)
+                  ? payload.data.results
+                  : []
+        setWorkouts(items)
+      })
       .catch((error) => setState({ loading: false, error: error.message }))
       .finally(() => setState((current) => ({ ...current, loading: false })))
   }, [])
 
   return (
-    <section className="view-section"><div className="section-heading"><div><p className="eyebrow">Your next move</p><h1>Workouts</h1><p className="lede">A little structure for wherever your energy is today.</p></div><span className="count-pill">{workouts.length} plans</span></div>
+    <section className="view-section"><div className="section-heading"><div><p className="eyebrow">Your next move</p><h1>Workouts</h1><p className="lede">A little structure for wherever your energy lands.</p></div></div>
       {state.loading && <p className="status-message">Loading workouts...</p>}{state.error && <p className="status-message status-error">{state.error}</p>}
-      {!state.loading && !state.error && <div className="workout-grid">{workouts.map((workout) => <article className="workout-card" key={workout._id || workout.id || workout.title}><div className="workout-meta"><span>{workout.type || 'Training'}</span><span>{workout.durationMinutes || 0} min</span></div><h2>{workout.title || 'Untitled workout'}</h2><p>{workout.description || 'A focused session for building consistency.'}</p><div className="workout-footer"><span className={`difficulty difficulty-${workout.difficulty || 'beginner'}`}>{workout.difficulty || 'beginner'}</span><button type="button" aria-label={`Start ${workout.title || 'workout'}`}>Start <span>→</span></button></div></article>)}{workouts.length === 0 && <p className="empty-state">No workouts have been added yet.</p>}</div>}
+      {!state.loading && !state.error && <div className="workout-grid">{workouts.map((workout) => <article className="workout-card" key={workout._id || workout.id || workout.title}><div className="workout-body"><h2>{workout.title || 'Workout'}</h2><p>{workout.description || 'Move with intention and keep it sustainable.'}</p><span>{workout.duration || 'Flexible'} • {workout.level || 'All levels'}</span></div></article>)}</div>}
     </section>
   )
 }
