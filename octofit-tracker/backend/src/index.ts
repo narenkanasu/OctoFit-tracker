@@ -3,12 +3,10 @@ import cors from 'cors';
 import express from 'express';
 import './config/database.js';
 import apiRouter from './routes.js';
+import { apiBaseUrl } from './server.js';
 
 const app = express();
 const port = 8000;
-const codespaceUrl = process.env.CODESPACE_NAME
-  ? `https://${process.env.CODESPACE_NAME}-8000.app.github.dev`
-  : 'http://localhost:8000';
 
 app.use(cors());
 app.use(express.json());
@@ -18,7 +16,7 @@ app.get('/api/health', (_request, response) => {
   response.json({
     status: 'ok',
     service: 'octofit-api',
-    apiBaseUrl: codespaceUrl,
+    apiBaseUrl,
   });
 });
 
